@@ -1,1 +1,125 @@
-# FRICK U
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Boredom Cure</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      background: #111;
+      color: #eee;
+    }
+    #startBtn {
+      font-size: 24px;
+      padding: 20px 40px;
+      cursor: pointer;
+      background: #ff3366;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      box-shadow: 0 0 15px rgba(255, 51, 102, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <h1>This will spam you with popups and a beeping sound.<br>
+      Would you like to continue to cure your boredom?</h1>
+  <button id="startBtn">YES</button>
+
+  <!-- Beep sound -->
+  <audio id="beepAudio" src="beep.mp3" preload="auto"></audio>
+
+  <script>
+    const POPUP_WIDTH = 200;
+    const POPUP_HEIGHT = 150;
+    const EXTRA_POPUPS_PER_CLICK = 1;
+    let hasStarted = false;
+
+    function startBeep() {
+      const audio = document.getElementById("beepAudio");
+      audio.loop = true;
+      audio.volume = 1.0; // adjust if needed
+      audio.play();
+    }
+
+    function getPopupHtml() {
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Boredom Cure</title>
+<style>
+  html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#000; color:#fff; }
+  body { display:flex; justify-content:center; align-items:center; font-family:Arial; }
+  h2 { font-size:20px; text-align:center; }
+</style>
+</head>
+<body>
+  <h2>WELCOME TO HELL</h2>
+  <script>
+    (function() {
+      let dx = (Math.random() < 0.5 ? -1 : 1) * 5;
+      let dy = (Math.random() < 0.5 ? -1 : 1) * 5;
+      let lastChange = Date.now();
+
+      function moveWindow() {
+        if (window.screenX + window.outerWidth >= screen.width || window.screenX <= 0) dx *= -1;
+        if (window.screenY + window.outerHeight >= screen.height || window.screenY <= 0) dy *= -1;
+
+        window.moveBy(dx, dy);
+
+        if (Date.now() - lastChange > 1500) {
+          dx = (Math.random() < 0.5 ? -1 : 1) * 5;
+          dy = (Math.random() < 0.5 ? -1 : 1) * 5;
+          lastChange = Date.now();
+        }
+        requestAnimationFrame(moveWindow);
+      }
+      moveWindow();
+
+      document.body.addEventListener('click', () => {
+        if (window.opener && !window.opener.closed) {
+          window.opener.postMessage('spawn-more-popups', '*');
+        }
+      });
+    })();
+  <\/script>
+</body>
+</html>`;
+    }
+
+    function openPopup() {
+      const features = `width=${POPUP_WIDTH},height=${POPUP_HEIGHT},resizable=yes`;
+      const newWindow = window.open('', '_blank', features);
+      if (newWindow) {
+        newWindow.document.write(getPopupHtml());
+        newWindow.document.close();
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      if (event.data === 'spawn-more-popups') {
+        for (let i = 0; i < EXTRA_POPUPS_PER_CLICK; i++) {
+          openPopup();
+        }
+      }
+    });
+
+    document.getElementById("startBtn").addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (hasStarted) return;
+      hasStarted = true;
+      startBeep();
+      openPopup();
+    });
+
+    document.body.addEventListener("click", () => {
+      if (hasStarted) {
+        openPopup();
+      }
+    });
+  </script>
+</body>
+</html>
